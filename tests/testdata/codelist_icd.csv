@@ -1,0 +1,4 @@
+VAR_GRP;VAR_NAME;ICD;LABEL_NAME;TEXT;VAL_BEG;VAL_END;SUBSTRING
+COV;CHOLERA;A000;Cholera;Cholera durch Vibrio cholerae O:1, Biovar cholerae;2004;2023;0
+COV;CHOLERA;A001;Cholera;Cholera durch Vibrio cholerae O:1, Biovar eltor;2004;2023;0
+COV;CHOLERA;A009;Cholera;Cholera, nicht näher bezeichnet;2004;2023;0

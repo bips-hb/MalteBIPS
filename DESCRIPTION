@@ -1,0 +1,21 @@
+Package: MalteBIPS
+Title: Collection of utility functions by Malte Braitmaier for work on GePaRD studies at BIPS 
+Version: 0.0.0
+Authors@R: 
+    person("Malte", "Braitmaier", , "braitmaier@leibniz-bips.de", role = c("aut", "cre"))
+Description: A collection of my personal utility functions. I use these functions 
+	in my day to day work on database studies with the German Pharmacoepidemiological 
+	Research Database (GePaRD) and make them public here in case any other BIPS folk 
+	find them useful. The package requires at least R version 4, since I use the native 
+	pipe operator. 
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Suggests: 
+    DBI,
+    ROracle,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Imports: 
+    scales

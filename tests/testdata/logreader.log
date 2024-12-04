@@ -1,0 +1,69 @@
+NOTE: PROCEDURE PRINTTO used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+49   
+50   
+51   *** Generate a note indicating that an operation created missing values
+52       due to missing inputs;
+53   data test;
+54       a = 1;
+55       output;
+56       a = .;
+57       output;
+58   run;
+
+NOTE: The data set WORK.TEST has 2 observations and 1 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+59   data test;
+60       set test;
+61       b = 1 - a;
+62   run;
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      1 at 61:11   
+NOTE: There were 2 observations read from the data set WORK.TEST.
+NOTE: The data set WORK.TEST has 2 observations and 2 variables.
+NOTE: DATA statement used (Total process time):
+      real time           0.02 seconds
+      cpu time            0.00 seconds
+      
+
+63   
+64   *** Generate an error and warning message;
+65   data test;
+66       set doesnotexist;
+ERROR: File WORK.DOESNOTEXIST.DATA does not exist.
+67   run;
+
+NOTE: The SAS System stopped processing this step because of errors.
+WARNING: The data set WORK.TEST may be incomplete.  When this step was stopped there were 0 
+         observations and 0 variables.
+WARNING: Data set WORK.TEST was not replaced because this step was stopped.
+NOTE: DATA statement used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+68   
+69   
+70   /*** deletes workspace ***/
+71   proc datasets library=work nolist kill memtype=data;
+NOTE: Deleting WORK.TEST (memtype=DATA).
+72   quit;
+
+NOTE: PROCEDURE DATASETS used (Total process time):
+      real time           0.00 seconds
+      cpu time            0.00 seconds
+      
+
+73   /*** stops writing on log and output file ***/
+74   proc printto;
+75   run;
+
