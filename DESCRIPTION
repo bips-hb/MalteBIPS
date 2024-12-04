@@ -1,6 +1,6 @@
 Package: MalteBIPS
 Title: Collection of utility functions by Malte Braitmaier for work on GePaRD studies at BIPS 
-Version: 0.0.0
+Version: 1.0.0
 Authors@R: 
     person("Malte", "Braitmaier", , "braitmaier@leibniz-bips.de", role = c("aut", "cre"))
 Description: A collection of my personal utility functions. I use these functions 
