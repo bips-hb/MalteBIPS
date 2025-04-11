@@ -35,8 +35,10 @@ logreader <- function(
   ### if it is an R log
   if (r.sas == "R") {
     ### identify errors and warnings:
-    lines$errors   <- as.numeric(grepl("^[Ee][Rr][Rr][Oo][Rr].*", lines$log))
-    lines$warnings <- as.numeric(grepl("^Warning message.*", lines$log))
+    lines$errors   <- as.numeric(grepl("^[Ee][Rr][Rr][Oo][Rr].*", lines$log) |
+                                   grepl("^Fehler:.*", lines$log))
+    lines$warnings <- as.numeric(grepl("^Warning message.*", lines$log) |
+                                   grepl("^Warnmeldung.*", lines$log))
 
     # ### identify relevant messages:
     lines$messages <- 0
