@@ -7,11 +7,13 @@
 #'
 #' @param logfile Path to the logfile, including file ending
 #' @param r.sas Either "R" or "SAS", defaults to "SAS"
+#' @param r.lines Number of lines read after an error or warning message in R
 #' @return Findings as a data.frame
 #' @export
 logreader <- function(
-  logfile = NULL,
-  r.sas = "SAS"
+    logfile = NULL,
+    r.sas = "SAS",
+    r.lines = 3
 ) {
   if(is.null(logfile)) stop("Provide path to logfile")
   r.sas <- toupper(r.sas)
@@ -40,19 +42,37 @@ logreader <- function(
     lines$warnings <- as.numeric(grepl("^Warning message.*", lines$log) |
                                    grepl("^Warnmeldung.*", lines$log))
 
-    # ### identify relevant messages:
-    lines$messages <- 0
-    # lines$messages <- as.numeric(
-    #   grepl(".*enter suspicious text.*", lines$log)
-    # )
+    ### identify relevant messages:
+    # lines$messages <- 0
+    lines$messages <- as.numeric(
+      grepl(".+Warnmeldung.*", lines$log) |
+        grepl(".+warnings().*", lines$log)
+    )
 
     ### overall index for findings
     lines$fishy <- as.numeric(lines$errors == 1 | lines$warnings == 1 | lines$messages == 1)
 
+    ### R often includes a line break after the error/warning flag word and displays the actual
+    ### warning in the subsequent lines --> also include the (up to 3) subsequent lines, unless
+    ### there is a line starting with ">"
+    was.fishy <- which(lines$errors == 1 | lines$warnings == 1)
+    for (i in was.fishy) {
+      tmp.stop <- 0
+      for (j in 1:r.lines) {
+        if (tmp.stop == 0) {
+          lines$fishy[i+j] <- ifelse(!grepl("^>.+", lines$log[i+j]), 1, lines$fishy[i+j])
+          if (grepl("^>.+", lines$log[i+j])) {
+            tmp.stop <- 1
+          }
+        }
+      }
+      tmp.stop <- 0
+    }
+
     if (sum(lines$fishy) > 0) {
       ### prepare output of findings
       output <- lines[
-        lines$errors == 1 | lines$warnings == 1 | lines$messages == 1,
+        lines$fishy == 1,
         names(lines) %in% c("rownumber", "log")
       ]
 
@@ -93,31 +113,31 @@ logreader <- function(
     lines$LOG <- toupper(lines$log)
     lines$notes    <- as.numeric(
       grepl("^NOTE.*", lines$log) &
-       (grepl(".*STOPPED.*", lines$LOG) |
-        grepl(".*CONVERTED.*", lines$LOG) |
-        grepl(".*UNINITIALIZED.*", lines$LOG) |
-        grepl(".*DIVISION BY ZERO.*", lines$LOG) |
-        grepl(".*INVALID.*", lines$LOG) |
-        grepl(".*MISSING.*", lines$LOG) |
-        grepl(".*IS ALREADY ON THE LIBRARY.*", lines$LOG) |
-        grepl(".* 0 OBSERVATIONS.*", lines$LOG) |
-        grepl(".* 0 VARIABLES.*", lines$LOG) |
-        grepl(".*MERGE STATEMENT.*", lines$LOG) |
-        grepl(".*AT LEAST ONE W.D..*", lines$LOG) |
-        grepl(".*NO STATISTICS.*", lines$LOG) |
-        grepl(".*OVERWRITTEN.*", lines$LOG) |
-        grepl(".*NOSPOOL.*", lines$LOG) |
-        grepl(".*MATHEMATICAL.*", lines$LOG) |
-        grepl(".*OUTSIDE AXIS RANGE.*", lines$LOG) |
-        grepl(".*LOST CARD.*", lines$LOG) |
-        grepl(".*SAS WENT TO A NEW LINE.*", lines$LOG) |
-        grepl(".*REPEAT.*", lines$LOG) |
-        grepl(".*MORE THAN ONE.*", lines$LOG) |
-        grepl(".*UNRESOLVED.*", lines$LOG) |
-        grepl(".*NOT RESOLVED.*", lines$LOG) |
-        grepl(".*REFERENCED.*", lines$LOG) |
-        grepl(".*EMPTY*", lines$LOG) |
-        grepl(".*W.D. FORMAT*", lines$LOG))
+        (grepl(".*STOPPED.*", lines$LOG) |
+           grepl(".*CONVERTED.*", lines$LOG) |
+           grepl(".*UNINITIALIZED.*", lines$LOG) |
+           grepl(".*DIVISION BY ZERO.*", lines$LOG) |
+           grepl(".*INVALID.*", lines$LOG) |
+           grepl(".*MISSING.*", lines$LOG) |
+           grepl(".*IS ALREADY ON THE LIBRARY.*", lines$LOG) |
+           grepl(".* 0 OBSERVATIONS.*", lines$LOG) |
+           grepl(".* 0 VARIABLES.*", lines$LOG) |
+           grepl(".*MERGE STATEMENT.*", lines$LOG) |
+           grepl(".*AT LEAST ONE W.D..*", lines$LOG) |
+           grepl(".*NO STATISTICS.*", lines$LOG) |
+           grepl(".*OVERWRITTEN.*", lines$LOG) |
+           grepl(".*NOSPOOL.*", lines$LOG) |
+           grepl(".*MATHEMATICAL.*", lines$LOG) |
+           grepl(".*OUTSIDE AXIS RANGE.*", lines$LOG) |
+           grepl(".*LOST CARD.*", lines$LOG) |
+           grepl(".*SAS WENT TO A NEW LINE.*", lines$LOG) |
+           grepl(".*REPEAT.*", lines$LOG) |
+           grepl(".*MORE THAN ONE.*", lines$LOG) |
+           grepl(".*UNRESOLVED.*", lines$LOG) |
+           grepl(".*NOT RESOLVED.*", lines$LOG) |
+           grepl(".*REFERENCED.*", lines$LOG) |
+           grepl(".*EMPTY*", lines$LOG) |
+           grepl(".*W.D. FORMAT*", lines$LOG))
     )
 
     ### extract information that is relevant for output

@@ -4,12 +4,14 @@
 \alias{logreader}
 \title{Scan a Log file for errors, warnings and suspicious messages}
 \usage{
-logreader(logfile = NULL, r.sas = "SAS")
+logreader(logfile = NULL, r.sas = "SAS", r.lines = 3)
 }
 \arguments{
 \item{logfile}{Path to the logfile, including file ending}
 
 \item{r.sas}{Either "R" or "SAS", defaults to "SAS"}
+
+\item{r.lines}{Number of lines read after an error or warning message in R}
 }
 \value{
 Findings as a data.frame
